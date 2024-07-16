@@ -73,7 +73,29 @@ Public Class Form1
 
     ' Fixing the btnUpdate_Click method
     Private Sub btnUpdate_Click(sender As Object, e As EventArgs) Handles btnUpdate.Click
+Try
+    sqlconn = New SqlConnection()
+    sqlconn.ConnectionString = $"Server={Server};Database={Database};Integrated Security=True;"
 
+    sqlconn.Open()
+    'updates the row according to its title
+    sqlQuery = "UPDATE Books SET Author = @Author, Genre = @Genre, YearPublished = @YearPublished WHERE Title = @Title"
+
+    sqlcmd = New SqlCommand(sqlQuery, sqlconn)
+    sqlcmd.Parameters.AddWithValue("@Author", txtAuthor.Text)
+    sqlcmd.Parameters.AddWithValue("@Genre", txtGenre.Text)
+    sqlcmd.Parameters.AddWithValue("@YearPublished", Integer.Parse(txtYearPublished.Text))
+    sqlcmd.Parameters.AddWithValue("@Title", txtTitle.Text)
+    sqlcmd.ExecuteNonQuery()
+    sqlconn.Close()
+Catch ex As Exception
+    MessageBox.Show(ex.Message, "MSSQL Connector", MessageBoxButtons.OK, MessageBoxIcon.Error)
+Finally
+    If sqlconn IsNot Nothing AndAlso sqlconn.State = ConnectionState.Open Then
+        sqlconn.Close()
+    End If
+
+End Try
 
         updatetable()
     End Sub
